@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"yukonpr/models"
+	"yukonpr/app/models"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
