@@ -24,8 +24,8 @@ func GetAllTags(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondJSON(w, http.StatusOK, tags)
 
+	respondJSON(w, http.StatusOK, tags)
 }
 func CreateTags(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -49,6 +49,7 @@ func CreateTags(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	respondJSON(w, http.StatusCreated, tag)
 }
 
@@ -66,6 +67,7 @@ func GetTask(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if tag == nil {
 		return
 	}
+
 	respondJSON(w, http.StatusOK, tag)
 }
 
@@ -75,5 +77,6 @@ func getTagsOr404(db *gorm.DB, id int, w http.ResponseWriter, r *http.Request) *
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}
+
 	return &tags
 }
