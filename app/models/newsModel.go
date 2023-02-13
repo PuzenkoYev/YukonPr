@@ -8,7 +8,7 @@ import (
 
 type NewsModel struct {
 	gorm.Model
-	Title string    `josn:"Title"`
+	Title string    `json:"Title"`
 	Time  time.Time `json:"Time"`
 	Text  string    `json:"Text"`
 	Image string    `json:"Image"`
