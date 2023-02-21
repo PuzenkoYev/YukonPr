@@ -8,6 +8,7 @@ import (
 	"yukonpr/app/scrapping"
 	"yukonpr/configs"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 )
