@@ -38,11 +38,11 @@ func (n News) Stringer() {
 	fmt.Println("PubDate:", n.PubDate)
 	fmt.Println("FullNewsLink:", n.FullNewsLink)
 }
-func ParseRss(url string) Rss {
+func ParseRss(url string) *Rss {
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("Error GET: %v\n", err)
-		return Rss{}
+		return &Rss{}
 	}
 	defer resp.Body.Close()
 
@@ -51,11 +51,13 @@ func ParseRss(url string) Rss {
 	decoder := xml.NewDecoder(resp.Body)
 	err = decoder.Decode(&rss)
 	if err != nil {
-		fmt.Printf("Error Decode: %v\n", err)
-		return Rss{}
+		fmt.Printf("\nError Decode: %v", err)
+		return &Rss{}
+	} else {
+		fmt.Printf("\nParsed succesful from :%v", url)
 	}
 
-	return rss
+	return &rss
 }
 
 // ToNewsModel convert scrapping.News to models.NewsModel
@@ -64,14 +66,14 @@ func ToNewsModel(oldModel News) models.NewsModel {
 	layout := "Mon, 02 Jan 2006 15:04:05 -0700"
 
 	newModel.Title = oldModel.Title
-	newModel.Image = oldModel.Image.Url
-	newModel.Text = oldModel.Description
+	newModel.ImageUrl = oldModel.Image.Url
+	newModel.Description = oldModel.Description
 
 	t, err := time.Parse(layout, oldModel.PubDate)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	newModel.Time = t
+	newModel.PubTime = t
 	return newModel
 }

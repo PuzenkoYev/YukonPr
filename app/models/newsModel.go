@@ -8,20 +8,13 @@ import (
 
 type NewsModel struct {
 	gorm.Model
-	Title string    `json:"Title"`
-	Time  time.Time `json:"Time"`
-	Text  string    `json:"Text"`
-	Image string    `json:"Image"`
-	Tags  []Tags    `gorm:"ForeignKey:NewsId" json:"NewsId"`
-}
-type Tags struct {
-	gorm.Model
-	NewsId int    `json:"NewsId"`
-	Name   string `json:"Name"`
+	Title       string    `json:"Title"`
+	PubTime     time.Time `json:"Time"`
+	Description string    `json:"Description"`
+	ImageUrl    string    `json:"ImageUrl"`
 }
 
 func DBMigrate(db *gorm.DB) *gorm.DB {
-	db.AutoMigrate(&NewsModel{}, &Tags{})
-	db.Model(&Tags{}).AddForeignKey("NewsId", "NewsModel(id)", "CASCADE", "CASCADE")
+	db.AutoMigrate(&NewsModel{})
 	return db
 }
