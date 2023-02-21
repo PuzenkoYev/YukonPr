@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"yukonpr/app/handler"
 	"yukonpr/app/models"
+	"yukonpr/app/scrapping"
 	"yukonpr/configs"
 
 	"github.com/gorilla/mux"
@@ -13,9 +13,9 @@ import (
 )
 
 type App struct {
-	Router *mux.Router
-	DB     *gorm.DB
-	//scrapping
+	Router    *mux.Router
+	DB        *gorm.DB
+	Scrapping *scrapping.Rss
 }
 
 func (a *App) Initialize(config *configs.Config) {
@@ -38,7 +38,7 @@ func (a *App) Initialize(config *configs.Config) {
 }
 
 func (a *App) setRouters() {
-	a.Get("/news", a.handleRequest(handler.GetAllNews))
+	//a.Get("/news", a.handleRequest(handler.GetAllNews))
 }
 
 // Get wraps the router for GET method
