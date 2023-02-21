@@ -57,6 +57,8 @@ func ParseRss(url string) Rss {
 
 	return rss
 }
+
+// ToNewsModel convert scrapping.News to models.NewsModel
 func ToNewsModel(oldModel News) models.NewsModel {
 	var newModel models.NewsModel
 	layout := "Mon, 02 Jan 2006 15:04:05 -0700"
