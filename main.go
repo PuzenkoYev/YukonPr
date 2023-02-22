@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 	"yukonpr/app"
-	"yukonpr/app/db"
-	"yukonpr/app/scrapping"
 	"yukonpr/configs"
 )
 
@@ -13,17 +11,17 @@ func main() {
 	config := configs.GetConfig()
 
 	app := &app.App{}
+	r := time.Now().Add(time.Hour)
+	fmt.Println(r)
+	r2 := time.Now().Add(-2 * time.Hour)
+	fmt.Println(r2)
+	r3 := time.Now().Add(-10 * time.Hour)
+	fmt.Println(r3)
 
 	app.Initialize(config)
-	//app.Run(":3000")
+	app.Run(":3000")
 
-	duration := 5 * time.Minute
-	for {
-		app.Scrapping = scrapping.ParseRss("https://rss.unian.net/site/news_rus.rss")
-		for _, item := range app.Scrapping.Channel.Items {
-			db.AddNews(*app.DB, scrapping.ToNewsModel(item))
-		}
-		fmt.Printf("\nIt's time to sleep. Wake up at %v", time.Now().Add(duration))
-		time.Sleep(duration)
-	}
+	//fmt.Println(db.SelectByWordInTitleOrText(*app.DB, "Украина"))
+	app.StartObserving("https://rss.unian.net/site/news_rus.rss")
+
 }

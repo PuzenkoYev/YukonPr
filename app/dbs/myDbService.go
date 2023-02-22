@@ -1,4 +1,4 @@
-package db
+package dbs
 
 import (
 	"fmt"
@@ -20,6 +20,7 @@ func AddNews(db gorm.DB, model models.NewsModel) bool {
 	fmt.Printf("\nAdd new News: {%v}  {%v}", model.PubTime, model.Title)
 	return true
 }
+
 func RemoveNews(db gorm.DB, id int) bool {
 	if err := db.Where("id = ?", id).Delete(models.NewsModel{}).Error; err != nil {
 		fmt.Printf("\n%v", err.Error())
@@ -27,6 +28,7 @@ func RemoveNews(db gorm.DB, id int) bool {
 	}
 	return true
 }
+
 func ContainsById(db gorm.DB, id int) bool {
 	var item models.NewsModel
 	if err := db.Where("id = ?", id).Find(&item).Error; err != nil {
@@ -35,6 +37,7 @@ func ContainsById(db gorm.DB, id int) bool {
 	}
 	return true
 }
+
 func ContainsByTitle(db gorm.DB, title string) bool {
 	var item models.NewsModel
 	if err := db.Where("title = ?", title).Find(&item).Error; err != nil {
@@ -43,11 +46,13 @@ func ContainsByTitle(db gorm.DB, title string) bool {
 	}
 	return true
 }
+
 func SelectAll(db gorm.DB) []models.NewsModel {
 	var news []models.NewsModel
 	db.Find(&news)
 	return news
 }
+
 func SelectById(db gorm.DB, id int) models.NewsModel {
 	var news models.NewsModel
 	if ContainsById(db, id) == true {
@@ -58,6 +63,7 @@ func SelectById(db gorm.DB, id int) models.NewsModel {
 		return news
 	}
 }
+
 func SelectByTitle(db gorm.DB, title string) models.NewsModel {
 	var news models.NewsModel
 	if ContainsByTitle(db, title) == true {
@@ -68,6 +74,7 @@ func SelectByTitle(db gorm.DB, title string) models.NewsModel {
 		return news
 	}
 }
+
 func SelectInTimeRange(db gorm.DB, from time.Time, to time.Time) []models.NewsModel {
 	var news []models.NewsModel
 	db.Where("pub_time BETWEEN ? AND ?", from, to).Find(&news)
