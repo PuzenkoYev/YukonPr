@@ -2,15 +2,12 @@ package app
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"yukonpr/app/models"
-	"yukonpr/app/scrapping"
-	"yukonpr/configs"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"time"
+	"yukonpr/app/db"
+	"yukonpr/app/scrapping"
 )
 
 type App struct {
@@ -19,58 +16,48 @@ type App struct {
 	Scrapping *scrapping.Rss
 }
 
-func (a *App) Initialize(config *configs.Config) {
-	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True",
-		config.DB.Username,
-		config.DB.Password,
-		config.DB.Host,
-		config.DB.Port,
-		config.DB.Name,
-		config.DB.Charset)
+//func (a *App) Initialize(config *configs.Config) {
+//	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True",
+//		config.DB.Username,
+//		config.DB.Password,
+//		config.DB.Host,
+//		config.DB.Port,
+//		config.DB.Name,
+//		config.DB.Charset)
+//
+//	db, err := gorm.Open(config.DB.Dialect, dbURI)
+//	if err != nil {
+//		log.Fatal("Could not connect database")
+//	}
+//
+//	a.DB = models.DBMigrate(db)
+//	a.Router = mux.NewRouter()
+//	a.setRouters()
+//}
 
-	db, err := gorm.Open(config.DB.Dialect, dbURI)
-	if err != nil {
-		log.Fatal("Could not connect database")
+func (a *App) StartObserving(url string) {
+	doObserve := make(chan bool, 1)
+	defer close(doObserve)
+	go a.observe(url, doObserve)
+
+	for true {
+		var str string
+		fmt.Scanln(&str)
+		if str == "stop" {
+			doObserve <- false
+			break
+		}
 	}
-
-	a.DB = models.DBMigrate(db)
-	a.Router = mux.NewRouter()
-	a.setRouters()
 }
 
-func (a *App) setRouters() {
-	//a.Get("/news", a.handleRequest(handler.GetAllNews))
-}
-
-// Get wraps the router for GET method
-func (a *App) Get(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	a.Router.HandleFunc(path, f).Methods("GET")
-}
-
-// Post wraps the router for POST method
-func (a *App) Post(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	a.Router.HandleFunc(path, f).Methods("POST")
-}
-
-// Put wraps the router for PUT method
-func (a *App) Put(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	a.Router.HandleFunc(path, f).Methods("PUT")
-}
-
-// Delete wraps the router for DELETE method
-func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	a.Router.HandleFunc(path, f).Methods("DELETE")
-}
-
-// Run the app on it's router
-func (a *App) Run(host string) {
-	log.Fatal(http.ListenAndServe(host, a.Router))
-}
-
-type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)
-
-func (a *App) handleRequest(handler RequestHandlerFunction) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler(a.DB, w, r)
+func (a *App) observe(url string, c chan bool) {
+	duration := 5 * time.Minute
+	for len(c) < 1 {
+		a.Scrapping = scrapping.ParseRss(url)
+		for _, item := range a.Scrapping.Channel.Items {
+			db.AddNews(*a.DB, scrapping.ToNewsModel(item))
+		}
+		fmt.Printf("\nIt's time to sleep. Wake up at %v", time.Now().Add(duration))
+		time.Sleep(duration)
 	}
 }
