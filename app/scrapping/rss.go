@@ -7,10 +7,10 @@ import (
 )
 
 type Channel struct {
-	Title string               `xml:"title"`
-	Link  string               `xml:"link"`
-	Desc  string               `xml:"description"`
-	Items []ScrappingNewsModel `xml:"item"`
+	Title string      `xml:"title"`
+	Link  string      `xml:"link"`
+	Desc  string      `xml:"description"`
+	Items []NewsModel `xml:"item"`
 }
 type Enclosure struct {
 	Url    string `xml:"url,attr"`
@@ -22,7 +22,7 @@ type Rss struct {
 	Channel Channel `xml:"channel"`
 }
 
-func (n ScrappingNewsModel) Stringer() {
+func (n NewsModel) Stringer() {
 	fmt.Println("Title:", n.Title)
 	fmt.Println("Description:", n.Description)
 	fmt.Println("ImageLink:", n.Image.Url)

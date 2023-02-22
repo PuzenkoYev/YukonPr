@@ -6,7 +6,7 @@ import (
 	"yukonpr/app/models"
 )
 
-type ScrappingNewsModel struct {
+type NewsModel struct {
 	Title        string    `xml:"title"`
 	Description  string    `xml:"description"`
 	Image        Enclosure `xml:"enclosure"`
@@ -14,8 +14,8 @@ type ScrappingNewsModel struct {
 	FullNewsLink string    `xml:"link"`
 }
 
-// ToNewsModel convert scrapping.ScrappingNewsModel to models.NewsModel
-func ToNewsModel(oldModel ScrappingNewsModel) models.NewsModel {
+// ToNewsModel convert scrapping.NewsModel to models.NewsModel
+func ToNewsModel(oldModel NewsModel) models.NewsModel {
 	var newModel models.NewsModel
 	layout := "Mon, 02 Jan 2006 15:04:05 -0700"
 
