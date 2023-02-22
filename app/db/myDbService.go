@@ -37,7 +37,7 @@ func ContainsById(db gorm.DB, id int) bool {
 }
 func ContainsByTitle(db gorm.DB, title string) bool {
 	var item models.NewsModel
-	if err := db.Where("Title = ?", title).Find(&item).Error; err != nil {
+	if err := db.Where("title = ?", title).Find(&item).Error; err != nil {
 		fmt.Printf("\n%v", err.Error())
 		return false
 	}
@@ -61,7 +61,7 @@ func SelectById(db gorm.DB, id int) models.NewsModel {
 func SelectByTitle(db gorm.DB, title string) models.NewsModel {
 	var news models.NewsModel
 	if ContainsByTitle(db, title) == true {
-		db.Where("Title = ? ", title).Find(&news)
+		db.Where("title = ? ", title).Find(&news)
 		return news
 	} else {
 		fmt.Printf("\nDidn't found model with id: %s", title)
@@ -70,11 +70,11 @@ func SelectByTitle(db gorm.DB, title string) models.NewsModel {
 }
 func SelectInTimeRange(db gorm.DB, from time.Time, to time.Time) []models.NewsModel {
 	var news []models.NewsModel
-	db.Where("Time BETWEEN ? AND ?", from, to).Find(&news)
+	db.Where("pub_time BETWEEN ? AND ?", from, to).Find(&news)
 	return news
 }
 func SelectByWordInTitleOrText(db gorm.DB, word string) []models.NewsModel {
 	var news []models.NewsModel
-	db.Where("Title LIKE ? OR Description LIKE ?", word, word).Find(&news)
+	db.Where("title LIKE ? OR description LIKE ?", "%"+word+"%", "%"+word+"%").Find(&news)
 	return news
 }
