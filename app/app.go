@@ -45,18 +45,18 @@ func (a *App) StartObserving(url string) {
 	defer close(doObserve)
 	go a.observe(url, doObserve)
 
-	for true {
-		var str string
-		fmt.Scanln(&str)
-		if str == "stop" {
-			doObserve <- false
-			break
-		}
-	}
+	//for true {
+	//	var str string
+	//	fmt.Scanln(&str)
+	//	if str == "stop" {
+	//		doObserve <- false
+	//		break
+	//	}
+	//}
 }
 
 func (a *App) observe(url string, c chan bool) {
-	duration := 5 * time.Minute
+	duration := time.Minute
 	for len(c) < 1 {
 		a.Scrapping = scrapping.ParseRss(url)
 		for _, item := range a.Scrapping.Channel.Items {
@@ -68,12 +68,13 @@ func (a *App) observe(url string, c chan bool) {
 }
 
 func (a *App) Run(host string) {
+	fmt.Println("Running server...")
 	log.Fatal(http.ListenAndServe(host, a.Router))
 }
 
 func (a *App) setRouters() {
-	a.Get("/news/{title}", a.handleRequest(handler.GetFullNews))
-	a.Get("/news/{from}/{to}", a.handleRequest(handler.GetListShortNewsBetweenTimes))
+	a.Get("/news", a.handleRequest(handler.GetFullNews))
+	a.Get("/news/search", a.handleRequest(handler.GetListOfShortNews))
 }
 
 func (a *App) Get(path string, f func(w http.ResponseWriter, r *http.Request)) {
