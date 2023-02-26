@@ -41,22 +41,16 @@ func (a *App) Initialize(config *configs.Config) {
 }
 
 func (a *App) StartObserving(url string) {
-	doObserve := make(chan bool, 1)
-	defer close(doObserve)
-	go a.observe(url, doObserve)
+	a.Scrapping = &scrapping.Rss{}
+	a.Scrapping.ObservingStatus = make(chan bool, 1)
+	//defer close(a.Scrapping.ObservingStatus)
+	go a.observe(url, a.Scrapping.ObservingStatus)
 
-	//for true {
-	//	var str string
-	//	fmt.Scanln(&str)
-	//	if str == "stop" {
-	//		doObserve <- false
-	//		break
-	//	}
-	//}
 }
 
 func (a *App) observe(url string, c chan bool) {
 	duration := time.Minute
+	defer close(c)
 	for len(c) < 1 {
 		a.Scrapping = scrapping.ParseRss(url)
 		for _, item := range a.Scrapping.Channel.Items {

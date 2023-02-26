@@ -19,7 +19,8 @@ type Enclosure struct {
 }
 
 type Rss struct {
-	Channel Channel `xml:"channel"`
+	Channel         Channel `xml:"channel"`
+	ObservingStatus chan bool
 }
 
 func (n NewsModel) Stringer() {
