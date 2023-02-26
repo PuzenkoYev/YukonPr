@@ -1,8 +1,8 @@
 package dbs
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
+	"log"
 	"time"
 	"yukonpr/app/models"
 )
@@ -13,17 +13,17 @@ func AddNews(db gorm.DB, model models.NewsModel) bool {
 		return false
 	}
 	if err := db.Save(&model).Error; err != nil {
-		fmt.Printf("\n%v", err.Error())
+		log.Printf("\n%v", err.Error())
 
 		return false
 	}
-	fmt.Printf("\nAdd new News: {%v}  {%v}", model.PubTime, model.Title)
+	log.Printf("\nAdd new News: {%v}  {%v}", model.PubTime, model.Title)
 	return true
 }
 
 func RemoveNews(db gorm.DB, id int) bool {
 	if err := db.Where("id = ?", id).Delete(models.NewsModel{}).Error; err != nil {
-		fmt.Printf("\n%v", err.Error())
+		log.Printf("\n%v", err.Error())
 		return false
 	}
 	return true
@@ -32,7 +32,7 @@ func RemoveNews(db gorm.DB, id int) bool {
 func ContainsById(db gorm.DB, id int) bool {
 	var item models.NewsModel
 	if err := db.Where("id = ?", id).Find(&item).Error; err != nil {
-		fmt.Printf("\n%v", err.Error())
+		log.Printf("\n%v", err.Error())
 		return false
 	}
 	return true
@@ -41,7 +41,7 @@ func ContainsById(db gorm.DB, id int) bool {
 func ContainsByTitle(db gorm.DB, title string) bool {
 	var item models.NewsModel
 	if err := db.Where("title = ?", title).Find(&item).Error; err != nil {
-		fmt.Printf("\n%v", err.Error())
+		log.Printf("\n%v", err.Error())
 		return false
 	}
 	return true
@@ -59,7 +59,7 @@ func SelectById(db gorm.DB, id int) models.NewsModel {
 		db.Where("id = ? ", id).Find(&news)
 		return news
 	} else {
-		fmt.Printf("\nDidn't found model with id: %d", id)
+		log.Printf("\nDidn't found model with id: %d", id)
 		return news
 	}
 }
@@ -70,7 +70,7 @@ func SelectByTitle(db gorm.DB, title string) models.NewsModel {
 		db.Where("title = ? ", title).Find(&news)
 		return news
 	} else {
-		fmt.Printf("\nDidn't found model with id: %s", title)
+		log.Printf("\nDidn't found model with id: %s", title)
 		return news
 	}
 }

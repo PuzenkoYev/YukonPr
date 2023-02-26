@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,13 +13,13 @@ import (
 func GetFullNews(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		println(err)
+		log.Println(err)
 		respondJSON(w, http.StatusBadRequest, []NewsModel{})
 		return
 	}
 
 	if dbs.ContainsById(*db, id) == false {
-		fmt.Printf("News not found. Title {%d}", id)
+		log.Printf("News not found. Title {%d}", id)
 		respondJSON(w, http.StatusBadRequest, NewsModel{})
 		return
 	} else {
@@ -41,13 +41,13 @@ func GetListOfShortNews(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 		from, err := time.Parse(layout, r.URL.Query().Get("from"))
 		if err != nil {
-			println(err)
+			log.Println(err)
 			respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
 			return
 		}
 		to, err := time.Parse(layout, r.URL.Query().Get("to"))
 		if err != nil {
-			println(err)
+			log.Println(err)
 			respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
 			return
 		}

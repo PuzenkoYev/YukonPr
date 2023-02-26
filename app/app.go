@@ -40,29 +40,27 @@ func (a *App) Initialize(config *configs.Config) {
 	a.setRouters()
 }
 
-func (a *App) StartObserving(url string) {
+func (a *App) StartObserving(url string, sleepDuration time.Duration) {
 	a.Scrapping = &scrapping.Rss{}
 	a.Scrapping.ObservingStatus = make(chan bool, 1)
-	//defer close(a.Scrapping.ObservingStatus)
-	go a.observe(url, a.Scrapping.ObservingStatus)
+	go a.observe(url, sleepDuration, a.Scrapping.ObservingStatus)
 
 }
 
-func (a *App) observe(url string, c chan bool) {
-	duration := time.Minute
+func (a *App) observe(url string, sleepDuration time.Duration, c chan bool) {
 	defer close(c)
 	for len(c) < 1 {
 		a.Scrapping = scrapping.ParseRss(url)
 		for _, item := range a.Scrapping.Channel.Items {
 			dbs.AddNews(*a.DB, scrapping.ToNewsModel(item))
 		}
-		fmt.Printf("\nIt's time to sleep. Wake up at %v", time.Now().Add(duration))
-		time.Sleep(duration)
+		log.Printf("\nIt's time to sleep. Wake up at %v", time.Now().Add(sleepDuration))
+		time.Sleep(sleepDuration)
 	}
 }
 
 func (a *App) Run(host string) {
-	fmt.Println("Running server...")
+	log.Println("Running server...")
 	log.Fatal(http.ListenAndServe(host, a.Router))
 }
 

@@ -3,6 +3,7 @@ package scrapping
 import (
 	"encoding/xml"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -34,7 +35,7 @@ func (n NewsModel) Stringer() {
 func ParseRss(url string) *Rss {
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("Error GET: %v\n", err)
+		log.Printf("Error GET: %v\n", err)
 		return &Rss{}
 	}
 	defer resp.Body.Close()
@@ -43,10 +44,10 @@ func ParseRss(url string) *Rss {
 	decoder := xml.NewDecoder(resp.Body)
 	err = decoder.Decode(&rss)
 	if err != nil {
-		fmt.Printf("\nError Decode: %v", err)
+		log.Printf("\nError Decode: %v", err)
 		return &Rss{}
 	} else {
-		fmt.Printf("\nParsed succesful from :%v", url)
+		log.Printf("\nParsed succesful from :%v", url)
 	}
 
 	return &rss

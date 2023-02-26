@@ -1,7 +1,7 @@
 package scrapping
 
 import (
-	"fmt"
+	"log"
 	"time"
 	"yukonpr/app/models"
 )
@@ -26,7 +26,7 @@ func ToNewsModel(oldModel NewsModel) models.NewsModel {
 	t, err := time.Parse(layout, oldModel.PubDate)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	newModel.PubTime = t
 	return newModel
