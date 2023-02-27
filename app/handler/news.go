@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
@@ -9,50 +10,45 @@ import (
 	"yukonpr/app/dbs"
 )
 
-// GetFullNews /news?id - GET
+// GetFullNews /news - GET
 func GetFullNews(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	search := r.URL.Query().Get("search")
+	if search != "" {
+		GetContainedWordShortNews(db, w, search)
+		return
+	}
+}
+
+// GetFullNewsById /news/{id} - GET
+func GetFullNewsById(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	request := mux.Vars(r)
+
+	id, err := strconv.Atoi(request["id"])
 	if err != nil {
 		log.Println(err)
-		respondJSON(w, http.StatusBadRequest, []NewsModel{})
 		return
 	}
-
-	if dbs.ContainsById(*db, id) == false {
-		log.Printf("News not found. Title {%d}", id)
-		respondJSON(w, http.StatusBadRequest, NewsModel{})
-		return
-	} else {
-		news := ToHandlerNewsModel(dbs.SelectById(*db, id))
-		respondJSON(w, http.StatusOK, news)
-	}
+	news := ToHandlerNewsModel(dbs.SelectById(*db, id))
+	respondJSON(w, http.StatusOK, news)
 }
 
 // GetListOfShortNews /news/search - GET
 func GetListOfShortNews(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	//Is the request .../search?contains
-	word := r.URL.Query().Get("contains")
-	if word != "" {
-		GetContainedWordShortNews(db, w, word)
-		return
-	} else {
-		//The request is .../search?from&to
-		layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02 15:04:05"
 
-		from, err := time.Parse(layout, r.URL.Query().Get("from"))
-		if err != nil {
-			log.Println(err)
-			respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
-			return
-		}
-		to, err := time.Parse(layout, r.URL.Query().Get("to"))
-		if err != nil {
-			log.Println(err)
-			respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
-			return
-		}
-		GetShortNewsBetweenTime(db, w, from, to)
+	from, err := time.Parse(layout, r.URL.Query().Get("from"))
+	if err != nil {
+		log.Println(err)
+		respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
+		return
 	}
+	to, err := time.Parse(layout, r.URL.Query().Get("to"))
+	if err != nil {
+		log.Println(err)
+		respondJSON(w, http.StatusBadRequest, []ShortNewsModel{})
+		return
+	}
+	GetShortNewsBetweenTime(db, w, from, to)
 }
 
 // GetShortNewsBetweenTime /news/search?from&to - GET
@@ -74,5 +70,4 @@ func GetContainedWordShortNews(db *gorm.DB, w http.ResponseWriter, word string) 
 		res = append(res, ToHandlerShortNewsModel(val))
 	}
 	respondJSON(w, http.StatusOK, res)
-	return
 }

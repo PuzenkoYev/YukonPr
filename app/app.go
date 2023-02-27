@@ -66,7 +66,7 @@ func (a *App) Run(host string) {
 
 func (a *App) setRouters() {
 	a.Get("/news", a.handleRequest(handler.GetFullNews))
-	a.Get("/news/search", a.handleRequest(handler.GetListOfShortNews))
+	a.Get("/news/{id}", a.handleRequest(handler.GetFullNewsById))
 }
 
 func (a *App) Get(path string, f func(w http.ResponseWriter, r *http.Request)) {
